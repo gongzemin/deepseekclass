@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
 import { AppContextProvider } from '@/context/AppContext'
+import './prism.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

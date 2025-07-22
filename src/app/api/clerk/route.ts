@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
 
   // 验证请求的有效性
   const { data, type } = wh.verify(body, svixHeaders) as SvixEvent
+  console.log('data---', data, type)
 
   // 准备用户数据
   const userData = {

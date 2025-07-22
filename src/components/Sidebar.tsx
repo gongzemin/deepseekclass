@@ -1,44 +1,49 @@
-import React, { useState } from 'react'
-import Image from 'next/image'
 import { assets } from '@/assets/assets'
+import Image from 'next/image'
+import React, { useState } from 'react'
 import { useClerk, UserButton } from '@clerk/nextjs'
 import { useAppContext } from '@/context/AppContext'
 import ChatLabel from './ChatLabel'
+import { OpenMenuState } from '@/types'
 
 interface SidebarProps {
   expand: boolean
   setExpand: (value: boolean) => void
 }
-
-type OpenMenuState = {
-  open: boolean
-}
-const createNew = () => {}
 const Sidebar: React.FC<SidebarProps> = ({ expand, setExpand }) => {
   const { openSignIn } = useClerk()
-  const { user } = useAppContext()
-
+  const { user, chats, createNewChat, fetchUsersChats, selectedChat } =
+    useAppContext()
   const [openMenu, setOpenMenu] = useState<OpenMenuState>({
+    id: null,
     open: false,
   })
+
+  // 创建新聊天后 聊天记录也要是新聊天的 就是说新聊天聊天记录为空
+  const createNew = async () => {
+    await createNewChat()
+    fetchUsersChats()
+  }
+
   return (
     <div
-      className={`flex flex-col justify-between bg-[#212327] pt-7 transition-all 
-     z-50 max-md:absolute max-md:h-screen ${
-       expand ? 'p-4 w-64' : 'md:w-20 w-0 max-md:overflow-hidden'
+      className={`flex flex-col justify-between bg-[#212327] pt-4 transition-all z-50 max-md:absolute
+     max-md:h-screen ${
+       expand ? 'p-4 pr-2 w-64' : 'md:w-17 w-0 max-md:overflow-hidden'
      }`}
     >
       <div>
         <div
           className={`flex ${
-            expand ? 'flex-row gap-10' : 'flex-col items-center gap-8'
+            expand ? 'flex-row justify-between' : 'flex-col items-center gap-8'
           }`}
         >
           <Image
-            className={expand ? 'w-36' : 'w-10'}
             src={expand ? assets.logo_text : assets.logo_icon}
-            alt=""
+            alt="DeepSeek Logo"
+            className={expand ? 'w-33' : 'w-10'}
           />
+
           <div
             onClick={() => (expand ? setExpand(false) : setExpand(true))}
             className="group relative flex items-center justify-center hover:bg-gray-500/20 transition-all
@@ -102,7 +107,16 @@ const Sidebar: React.FC<SidebarProps> = ({ expand, setExpand }) => {
           }`}
         >
           <p className="my-1">最近</p>
-          <ChatLabel openMenu={openMenu} setOpenMenu={setOpenMenu} />
+          {chats.map(chat => (
+            <ChatLabel
+              name={chat.name ?? '未命名聊天'}
+              key={chat._id}
+              id={chat._id}
+              openMenu={openMenu}
+              setOpenMenu={setOpenMenu}
+              isSelected={selectedChat?._id === chat._id}
+            />
+          ))}
         </div>
       </div>
 
@@ -162,5 +176,4 @@ const Sidebar: React.FC<SidebarProps> = ({ expand, setExpand }) => {
     </div>
   )
 }
-
 export default Sidebar

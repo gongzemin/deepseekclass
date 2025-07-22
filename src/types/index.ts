@@ -3,3 +3,7 @@ export interface MessageType {
   content: string
   timestamp: number
 }
+export type OpenMenuState = {
+  id: string | null
+  open: boolean
+}
